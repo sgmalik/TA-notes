@@ -8,10 +8,12 @@
 When we talk about a computer’s design, it is important to separate two closely related but distinct ideas: **architecture** and **organization**.  
 
 **Computer architecture** refers to the abstract model of the machine, the aspects that a programmer sees and interacts with. This includes the instruction set (the set of operations the computer can perform), the supported data types (integers, floating-point numbers, characters), the memory model, and the addressing modes. Architecture defines *what* the computer does, not *how* it is implemented.  
+  - **Definition**: The conceptual design and fundamental operational structure of a computer system
+  - Think, what the system **DOES** and how the user sees it -> The architecture of a computer is like a blueprint. You're buying a house -- know the rooms, the purpose of each room and the general layout. However, you don't know how the the builder will wire the house or the plumbing.  
 
 **Computer organization**, on the other hand, describes the actual implementation of the architecture in hardware. This includes details such as the datapath (the circuits that carry out operations), control logic, pipeline structure, and the arrangement of memory and caches. Organization concerns *how* the machine performs the operations defined by the architecture.  
-
-To use an analogy, think of designing a house. The **blueprint** shows the layout of rooms, doors, and windows, this is the *architecture*. The choice of materials, the wiring behind the walls, and the plumbing details are the *organization*. Two houses with the same blueprint can be built in different ways, just as two CPUs with the same architecture can have different organizations.  
+  - **Definition**: The operational units and their interconnections that implement the architectural specifications
+  - Think, how the system is **BUILT** and how all of the hardware in the machine executes the architecture -> Lets go back to the construction analogy, this would be the other side of the coin. This would be the plumbing, wiring, and materials to build the house.
 
 For example, the ARM architecture defines a particular instruction set. A simple ARM processor in a smartwatch and a powerful ARM-based processor in a smartphone both implement the same architecture, but their organizations differ drastically in clock speed, cache design, and power management.  
 
@@ -19,7 +21,19 @@ For example, the ARM architecture defines a particular instruction set. A simple
 
 ## 2. Major Components of a Computer System (§1.3)  
 
+### Review
+
+When we think about a typical application, this may be millions of lines of code but as we know, the hardware on a computer can only execute low level instructions in what we know as **machine code**. There are multiple layers of software that take us from this high level code to these lower level instructions. The two main system softwares that we'll focus on are the **Operating System**, (Linux, MacOS, Windows), and the **Compiler**. 
+- **Operating System**: Interfaces user's programs and the hardware -> variety of different services and functions
+- **Compilers**: Translate a program written in a high level language into instructions that the hardware can actually execute
+
+Computers run on binary instructions, programming languages make these instructions easier to write and execute. Simple
+
+### Hardware
+
 A modern computer system can be understood as four interacting parts: the **CPU**, **memory**, **I/O devices**, and the **buses** that connect them.  
+
+![Five classic components of a computer](5-classic.png)
 
 The **CPU (Central Processing Unit)** is the “brain” of the computer. It has two primary subsystems: the **control unit**, which directs the flow of instructions and data, and the **datapath**, which contains the arithmetic and logic unit (ALU) and registers. The ALU carries out basic operations such as addition, subtraction, and comparisons, while registers provide very small but extremely fast storage locations inside the CPU.  
 
@@ -45,17 +59,45 @@ Some systems instead use the **Harvard architecture**, where instructions and da
 
 ## 4. The Fetch–Decode–Execute Cycle (§1.4)  
 
-Every instruction executed by the CPU goes through a standard cycle known as the **fetch–decode–execute cycle**. This cycle describes how the CPU interprets and carries out instructions step by step.  
+At its core, the operation of every computer is governed by a repetitive loop known as the **fetch–decode–execute cycle**, sometimes simply called the **instruction cycle**. Regardless of the complexity of modern hardware, this cycle remains the heartbeat of the CPU, the rhythm by which all programs run.  
 
-1. **Fetch**: The CPU retrieves the next instruction from memory. The address of this instruction is held in the **program counter (PC)**.  
-2. **Decode**: The control unit examines the instruction to determine the operation (the opcode) and the operands (which data values or registers are involved).  
-3. **Execute**: The datapath performs the required operation. For arithmetic instructions, the ALU carries out the calculation. For memory instructions, data may be loaded or stored.  
-4. **Store**: If the instruction produces a result, it is written to a register or to memory.  
-5. **Update PC**: The program counter is updated to point to the next instruction. In the case of a branch or jump, the PC may be set to a new address.  
+### 4.1 Fetch  
 
-As an example, consider an instruction that adds the contents of two registers, `R2` and `R3`, and stores the result in `R1`. The CPU fetches this instruction from memory, decodes it as an addition, executes the addition in the ALU, stores the sum in `R1`, and then increments the PC to fetch the next instruction.  
+The first step is to **fetch** the next instruction from memory. The CPU maintains a special register called the **Program Counter (PC)**, which holds the memory address of the next instruction to be executed. The control unit sends this address over the address bus to main memory, which then returns the instruction’s binary code over the data bus. The instruction is placed into another register, often called the **Instruction Register (IR)**, where it can be decoded in the next step.  
 
-This cycle repeats continuously while the computer runs, forming the heartbeat of the CPU.  
+Once the instruction is fetched, the program counter is usually incremented so that it points to the next instruction in memory. In the simplest case, instructions are stored sequentially, so adding one word length to the PC will point to the correct location. However, not all instructions follow sequential flow — control instructions such as branches, jumps, or function calls may change the PC to point to a different location, allowing the program to alter its path of execution.  
+
+**Example:** Suppose the PC currently holds the address `0x00400000`. The CPU fetches the instruction at this location — for example, an “ADD R1, R2, R3” instruction. The PC is then incremented to `0x00400004` to prepare for the next instruction, assuming a 32-bit instruction size.  
+
+### 4.2 Decode  
+
+After the instruction has been fetched into the instruction register, the CPU must **decode** it to determine what action to perform. The binary pattern of the instruction is divided into fields, each of which has a specific meaning.  
+
+One part of the instruction is the **opcode**, or operation code, which specifies what operation is to be carried out. Other parts of the instruction may specify the **source operands** (registers or memory addresses to be read) and the **destination operand** (where the result will be stored).  
+
+Decoding is handled by the **control unit**, which translates the instruction’s binary fields into a set of control signals. These signals tell the datapath what to do: which registers to read, what operation the ALU should perform, whether memory should be accessed, and where the result should go.  
+
+**Example:** If the instruction is “ADD R1, R2, R3,” the opcode specifies that this is an addition operation. The instruction also indicates that registers R2 and R3 should be read as inputs, and that the result should be written into R1. The control unit generates signals to fetch the values of R2 and R3, configure the ALU for addition, and prepare register R1 to receive the result.  
+
+### 4.3 Execute  
+
+The final stage is **execution**. In this step, the CPU performs the operation specified by the instruction. This may involve arithmetic in the ALU, accessing memory, or updating the program counter for a branch.  
+
+- For arithmetic and logical instructions, the ALU performs the operation on the input operands.  
+- For load or store instructions, the CPU interacts with memory: either reading data from memory into a register or writing data from a register into memory.  
+- For branch or jump instructions, the program counter is updated with a new address, changing the flow of execution.  
+
+The result of the instruction is then stored in the designated destination, typically a register or a memory location.  
+
+**Example (continuing):** The ALU adds the values stored in R2 and R3. If R2 contains the number 7 and R3 contains the number 5, the ALU produces 12. This result is written into register R1. The PC has already been incremented, so the CPU is ready to fetch the next instruction.  
+
+### 4.4 Cycle Repeats  
+
+Once execution is complete, the cycle begins again: the CPU fetches the next instruction, decodes it, executes it, and so forth. This process continues for as long as the computer is powered on and running a program. Modern CPUs improve upon this basic model by overlapping multiple instructions (pipelining), executing instructions out of order, and using caches to speed up memory access. However, all of these optimizations are still based on the same fundamental fetch–decode–execute cycle.  
+
+### 4.5 Importance  
+
+Understanding the fetch–decode–execute cycle is key to understanding how software interacts with hardware. Every program you write in a high-level language is eventually broken down into instructions that pass through this cycle. From running a simple calculator application to rendering 3D graphics, the CPU is always fetching, decoding, and executing billions of instructions per second.  
 
 ---
 
@@ -75,7 +117,10 @@ For now, it is enough to understand that ARM is an example of RISC, and x86 is a
 
 ## 6. Basic Performance Metrics (§1.5)  
 
-When comparing processors, it is tempting to look only at the clock speed in gigahertz (GHz). However, performance depends on multiple factors. The fundamental equation for CPU execution time is:  
+
+When evaluating computer systems, it is tempting to focus only on the processor’s clock speed, which is often advertised in gigahertz (GHz). The clock frequency tells us how many cycles the processor can execute per second. For example, a 3 GHz processor has a clock period of about 0.333 nanoseconds, meaning that its clock “ticks” three billion times per second. However, raw clock speed is not a complete measure of performance. Two different processors running at the same frequency, or even one running at a lower frequency, can complete a given task faster than another depending on their design and efficiency.  
+
+To understand performance, computer architects use a fundamental equation that breaks down CPU execution time into three factors:  
 
 ```
 
@@ -83,21 +128,22 @@ CPU Time = Instruction Count × CPI × Clock Cycle Time
 
 ```
 
-- **Instruction Count (IC):** The number of instructions executed by the program.  
-- **CPI (Cycles Per Instruction):** The average number of clock cycles required for each instruction.  
-- **Clock Cycle Time:** The duration of a single cycle, which is the inverse of the clock frequency.  
+- The **Instruction Count (IC)** is the number of machine instructions executed for a given program. This depends on the instruction set architecture and also on the compiler, since different compilers may generate more or fewer instructions for the same source program.  
+- The **Cycles Per Instruction (CPI)** is the average number of clock cycles each instruction requires to complete. CPI depends on the microarchitecture of the processor -> Simple instructions may take one cycle, while more complex instructions can take multiple cycles.  
+- The **Clock Cycle Time** is the duration of a single cycle. It is the reciprocal of the clock frequency. A 2 GHz processor has a cycle time of 0.5 nanoseconds, while a 3 GHz processor has a cycle time of about 0.333 nanoseconds. 
 
 For example, consider two processors:  
 
 - Processor A: 3 GHz clock, average CPI = 2  
 - Processor B: 2 GHz clock, average CPI = 1.2  
 
-Processor A has a clock cycle time of 0.333 ns. With a CPI of 2, each instruction takes 0.666 ns.  
-Processor B has a cycle time of 0.5 ns. With a CPI of 1.2, each instruction takes 0.6 ns.  
+For each instruction, Processor A requires 0.666 ns (2 × 0.333 ns), while Processor B requires 0.6 ns (1.2 × 0.5 ns). Even though Processor B has a lower clock frequency, it executes each instruction faster because of its lower CPI. This example shows that clock speed alone does not determine performance.  
 
-Even though Processor A has a higher clock frequency, Processor B actually executes each instruction faster because of its lower CPI.  
+In practice, overall execution time also depends on the **instruction count**. A compiler that produces more efficient code may reduce the number of instructions, which can compensate for a higher CPI. Conversely, an instruction set with complex operations might reduce instruction count but increase CPI.  
 
-This shows why GHz alone is not a good indicator of performance. Compiler optimizations, instruction set design, and microarchitecture all affect how many instructions are executed and how many cycles they take.  
+Another useful metric is **MIPS (Millions of Instructions Per Second)**, which measures how many instructions a processor can execute per unit of time. However, MIPS can be misleading because instruction complexity varies across architectures. A program that executes fewer but more complex instructions may appear to have lower MIPS but still run faster.  
+
+Modern benchmarks often measure performance using real-world applications or standardized test suites, because raw metrics like GHz or MIPS can be misleading on their own. Nonetheless, the CPU performance equation provides a valuable framework for understanding the trade-offs between instruction count, CPI, and clock speed.  
 
 ---
 
