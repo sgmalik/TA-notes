@@ -43,44 +43,59 @@ The **NOT gate** is essentially a negation. If the input is 1 then the output is
 
 Each of these gates can be represented with a **truth table**, which lists all possible input combinations and their resulting output. Truth tables are the most straightforward way to describe a gate’s behavior mathematically. Here is an example of the **AND** truth table (note: **y** represents the output): 
 
-| A | B | Y |
-|---|---|---|
-| 0 | 0 | 0 |
-| 0 | 1 | 0 |
-| 1 | 0 | 0 |
-| 1 | 1 | 1 |
+| A | B | AND (A · B) | OR (A + B) | NOT (¬A) |
+|---|---|-------------|------------|----------|
+| 0 | 0 |      0      |     0      |    1     |
+| 0 | 1 |      0      |     1      |    1     |
+| 1 | 0 |      0      |     1      |    0     |
+| 1 | 1 |      1      |     1      |    0     |
 
 ---
 
 ### 1.2 Derived Gates  
 
-Beyond the basic gates, digital systems make heavy use of derived gates.  
+Beyond the basic gates, digital systems make heavy use of derived gates, which is just a combination of the 3 basic logic gates.
 
 The **XOR (exclusive OR) gate** produces an output of 1 only when its two inputs differ. In Boolean form, it is expressed as `Y = A ⊕ B = A'B + AB'`. If either A or B is true, the output will be 1 but if A and B are true, the output will be 0. This is how XOR differs from a traditional OR.
 
 The **NAND (NOT-AND) gate** and **NOR (NOT-OR) gate** are also essential. NAND produces the opposite of an AND gate, while NOR produces the opposite of an OR gate. What makes these two particularly powerful is that they are **universal gates**: any Boolean function can be built using only NAND gates or only NOR gates. This property has been extremely important in hardware design because fabricating circuits using just one type of gate often simplifies manufacturing.  
 
+Here is a truth table for each of these derived gates:
+
+| A | B | XOR (A ⊕ B) | NAND (¬(A · B)) | NOR (¬(A + B)) |
+|---|---|-------------|-----------------|----------------|
+| 0 | 0 |      0      |        1        |        1       |
+| 0 | 1 |      1      |        1        |        0       |
+| 1 | 0 |      1      |        1        |        0       |
+| 1 | 1 |      0      |        0        |        0       |
+
 ---
 
 ## 2. Combinational Logic (§A.3)  
 
-### 2.1 Definition  
+Now that we understand these basic gates, we will expand into combinational circuits. Computers require much more complex circuits and more often than not, there are multiple inputs. A **combinational circuit** is a collection of logic gates executed sequentially, and grouped together. The output depends on the current input, meaning that there is no memory and the circuits output is variable based on conditions. We use these for math, parsing through data, and decoding instruction sets. The derived gates are simplified versions of these combinational gates. 
 
-While individual gates are useful, real computers require more complex circuits. A **combinational circuit** is a collection of logic gates connected together in such a way that the outputs depend only on the current inputs. There is no memory of past inputs. These circuits are used for tasks such as arithmetic operations, selecting data, and decoding instructions.  
-
----
-
-### 2.2 Multiplexers (MUX)  
-
-One of the most common combinational circuits is the **multiplexer**, or **MUX**. A multiplexer acts as a digital switch: it selects one of several input signals and forwards it to the output, based on the value of control inputs.  
-
-The simplest version is the **2-to-1 multiplexer**, which has two data inputs (D0 and D1), one control input (S), and one output (Y). If the control input is 0, the output is equal to D0. If the control input is 1, the output is equal to D1. In Boolean form: `Y = S'D0 + SD1`.  
-
-Multiplexers are used extensively in computer datapaths to select between different sources of data. For instance, when updating a register, the CPU may use a multiplexer to decide whether the value comes from an arithmetic operation, a memory load, or an immediate constant.  
+The combinational circuits that we will discuss this week are **Multiplexers**, **Decoders and Encoders**, and **Adders**.
 
 ---
 
-### 2.3 Decoders and Encoders  
+### 2.1 Multiplexers (MUX)  
+
+The first combinational circuit we will discuss are **Multiplexers**, or **MUX** for short. A MUX is essentially like a digital switch that selects an input based on a **control input** and sends this to the output. Here's an analogy: Think of a railroad track where you have 2 seperate tracks combining into one. Only one of these tracks can be attached at the same time. The **control input** is like the lever that switches the track. Based on some condition, the operator pulls the lever and switches the track.
+
+The simplest MUX is the **2-to-1 multiplexer**, which has two data inputs (D0 and D1), one control input (S), and one output (Y). If the control input is 0, the output is equal to D0. If the control input is 1, the output is equal to D1. In Boolean form: `Y = S'D0 + SD1`.  
+
+Now, you might be thinking, how is the control input decided? Refering back to our train example, what makes the operator switch the track, what are the conditions? *The control inputs of a MUX are* **signals coming from other parts of the circuit, more often than not from the control unit of the CPU** -> Think back to the **fetch-decode-execute** cycle. The control unit determines what operation needs to happen based on the instruction; Is this addition, is this a branch, etc. These are then turned into control signals which goes into these combinational circuits. Based on these control signals, we select a certain input data.
+
+#### Example
+
+In the CPU, after each instruction the **program counter (PC)** is updated. Depending on the instruction, a different operation occurs. If it is a normal instruction then the next PC should be 4 more than the current PC but if its' a branch instruction, the next PC should be a completely different address representing the branch target. These become the two data inputs:
+- If the instruction is not a branch, then the control unit sets `S = 0`, causing the MUX to output `D0 = PC + 4`
+- If the instruction is a branch, the control unit sets `S = 0`, causing the MUX to output `D1 = branch target`.
+
+---
+
+### 2.2 Decoders and Encoders  
 
 Another important family of combinational circuits is **decoders** and **encoders**.  
 
@@ -90,7 +105,7 @@ An **encoder** performs the reverse operation: it takes 2ⁿ possible inputs and
 
 ---
 
-### 2.4 Adders  
+### 2.3 Adders  
 
 Arithmetic is at the core of computation, and adders are the simplest circuits that perform it.  
 
