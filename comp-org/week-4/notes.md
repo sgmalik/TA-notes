@@ -41,7 +41,7 @@ The **OR gate** produces an output of 1 if **at least** one of its' inputs are 1
 
 The **NOT gate** is essentially a negation. If the input is 1 then the output is 0. In boolean algebra, this is written as `Y = ¬A`. This is often combined with another gate, more on combinational logic gates later on.
 
-Each of these gates can be represented with a **truth table**, which lists all possible input combinations and their resulting output. Truth tables are the most straightforward way to describe a gate’s behavior mathematically. Here is an example of the **AND** truth table (note: **y** represents the output): 
+Each of these gates can be represented with a **truth table**, which lists all possible input combinations and their resulting output. Truth tables are the most straightforward way to describe a gate’s behavior mathematically. 
 
 | A | B | AND (A · B) | OR (A + B) | NOT (¬A) |
 |---|---|-------------|------------|----------|
@@ -84,6 +84,43 @@ The combinational circuits that we will discuss this week are **Multiplexers**, 
 The first combinational circuit we will discuss are **Multiplexers**, or **MUX** for short. A MUX is essentially like a digital switch that selects an input based on a **control input** and sends this to the output. Here's an analogy: Think of a railroad track where you have 2 seperate tracks combining into one. Only one of these tracks can be attached at the same time. The **control input** is like the lever that switches the track. Based on some condition, the operator pulls the lever and switches the track.
 
 The simplest MUX is the **2-to-1 multiplexer**, which has two data inputs (D0 and D1), one control input (S), and one output (Y). If the control input is 0, the output is equal to D0. If the control input is 1, the output is equal to D1. In Boolean form: `Y = S'D0 + SD1`.  
+- The MUX is built from an inverter (to get S'), two AND gates (to combine each data input with the correct select signal), and one OR gate (to combine the results).
+
+>> [!NOTE]
+> Multiplexers can operate on both single-bit signals as well as multi-bit buses such as D0 = 1010₂, D1 = 1100₂ making them very useful for real CPU's that use a 32 or 64 bit architecture.
+
+The truth table for a 2-to-1 multiplexer is (Note, the `x` indicates that the input does not affect the output when the select line chooses the other input)
+
+| S | D0 | D1 | Y |
+|---|----|----|---|
+| 0 |  0 |  x | 0 |
+| 0 |  1 |  x | 1 |
+| 1 |  x |  0 | 0 |
+| 1 |  x |  1 | 1 |
+
+Here is a **4-to-1 multiplexer**, which has 4 data inputs, (D0, D1, D2, and D3), and two select lines, (S1 and S0). Even with the higher dimensionality, the MUX still produces 1 output. Here is the boolean equation: `Y = S1'S0'D0 + S1'S0D1 + S1S0'D2 + S1S0D3`.
+
+
+The truth table for a 4-to-1 multiplexer is (Note, the `x` indicates that the input does not affect the output when the select line chooses the other input)
+
+- If S1S0 = 00 → Y = D0  
+- If S1S0 = 01 → Y = D1  
+- If S1S0 = 10 → Y = D2  
+- If S1S0 = 11 → Y = D3  
+
+| S1 | S0 | D0 | D1 | D2 | D3 | Y |
+|----|----|----|----|----|----|---|
+|  0 |  0 |  0 |  x |  x |  x | 0 |
+|  0 |  0 |  1 |  x |  x |  x | 1 |
+|  0 |  1 |  x |  0 |  x |  x | 0 |
+|  0 |  1 |  x |  1 |  x |  x | 1 |
+|  1 |  0 |  x |  x |  0 |  x | 0 |
+|  1 |  0 |  x |  x |  1 |  x | 1 |
+|  1 |  1 |  x |  x |  x |  0 | 0 |
+|  1 |  1 |  x |  x |  x |  1 | 1 |
+
+>> [!NOTE]
+> An n-to-1 multiplexer requires log₂(n) select lines.
 
 Now, you might be thinking, how is the control input decided? Refering back to our train example, what makes the operator switch the track, what are the conditions? *The control inputs of a MUX are* **signals coming from other parts of the circuit, more often than not from the control unit of the CPU** -> Think back to the **fetch-decode-execute** cycle. The control unit determines what operation needs to happen based on the instruction; Is this addition, is this a branch, etc. These are then turned into control signals which goes into these combinational circuits. Based on these control signals, we select a certain input data.
 
