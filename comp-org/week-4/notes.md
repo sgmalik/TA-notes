@@ -1,0 +1,156 @@
+# Week 4: Logic Design  
+*References: Patterson & Hennessy, ARM Ed., Appendix A (§A.2–§A.4)*  
+
+---
+
+## Review 
+
+Last week we focused on the **big picture of computer architecture**. We distinguished between **computer architecture**. We examined the **five classic components of a computer system**. We also introduced the **stored-program concept** and the **Von Neumann model**, which together describe how instructions and data coexist in memory and are executed sequentially. This was further examined by tracing the **fetch–decode–execute cycle**, the repetitive process that drives all computation. We discussed **RISC vs. CISC** philosophies and introduced the **CPU performance equation**, which showed that performance depends not only on clock speed but also on instruction count and cycles per instruction. Lastly, we reviewed **boolean logic**, which forms the basis of all decision-making in digital circuits. 
+
+## Topics for This Week
+
+This week, we will dive into the components of the hardware and how these make the architecture work and operate. The hardware introduced last week is made from circuits and at their core, circuits are built off **logic gates** which will be the main point of interest. From here, we will see how these comnbine into **combinational circuits** and **sequential circuits** (more on these later on). This week will bridge the gap: How is the architecture executed in physical hardware.
+
+---
+
+## 1. Logic Gates (§A.2)  
+
+What exactly are **logic gates** and how do they help drive the decision-making process in circuits? **Logic gates** are the physical representation of boolean functions, which as we know, return **true** or **false**. These gates take electronic signals either representing **0 or 1**, with 0 being a low voltage charge and 1 being high. There are two possible options, making this a **binary input** and based on the **logical rule defined in the gate, returns a binary output. There are multiple different types of logic gates:
+- **AND**
+- **OR**
+- **NOT**
+- **NAND (NOT-AND)**
+- **XOR (Exclusive OR)**
+- **XNOR (Exclusive NOR, referred to as the equivalence gate)**
+Some of these should be very familiar especially if you've taken some sort of logic course but some of them may be new. For now, we will introduce the 3 most basic gates, **AND**, **OR**, and **NOT**.
+
+*> [!NOTE]
+> In the context of logic gates, we will use 0 and 1 for the output with 0 representing False and 1 representing True
+
+### 1.1 Basic Gates  
+
+#### AND Gate
+
+The **AND gate** produces an output of 1 if and only if both of its' inputs are also 1. In boolean algebra this is written as `Y = A · B`. 
+
+#### OR Gate
+
+The **OR gate** produces an output of 1 if **at least** one of its' inputs are 1. In boolean algebra, this is written as `Y = A + B`.
+
+#### NOT Gate
+
+The **NOT gate** is essentially a negation. If the input is 1 then the output is 0. In boolean algebra, this is written as `Y = ¬A`. This is often combined with another gate, more on combinational logic gates later on.
+
+Each of these gates can be represented with a **truth table**, which lists all possible input combinations and their resulting output. Truth tables are the most straightforward way to describe a gate’s behavior mathematically. Here is an example of the **AND** truth table (note: **y** represents the output): 
+
+| A | B | Y |
+|---|---|---|
+| 0 | 0 | 0 |
+| 0 | 1 | 0 |
+| 1 | 0 | 0 |
+| 1 | 1 | 1 |
+
+---
+
+### 1.2 Derived Gates  
+
+Beyond the basic gates, digital systems make heavy use of derived gates.  
+
+The **XOR (exclusive OR) gate** produces an output of 1 only when its two inputs differ. In Boolean form, it is expressed as `Y = A ⊕ B = A'B + AB'`. If either A or B is true, the output will be 1 but if A and B are true, the output will be 0. This is how XOR differs from a traditional OR.
+
+The **NAND (NOT-AND) gate** and **NOR (NOT-OR) gate** are also essential. NAND produces the opposite of an AND gate, while NOR produces the opposite of an OR gate. What makes these two particularly powerful is that they are **universal gates**: any Boolean function can be built using only NAND gates or only NOR gates. This property has been extremely important in hardware design because fabricating circuits using just one type of gate often simplifies manufacturing.  
+
+---
+
+## 2. Combinational Logic (§A.3)  
+
+### 2.1 Definition  
+
+While individual gates are useful, real computers require more complex circuits. A **combinational circuit** is a collection of logic gates connected together in such a way that the outputs depend only on the current inputs. There is no memory of past inputs. These circuits are used for tasks such as arithmetic operations, selecting data, and decoding instructions.  
+
+---
+
+### 2.2 Multiplexers (MUX)  
+
+One of the most common combinational circuits is the **multiplexer**, or **MUX**. A multiplexer acts as a digital switch: it selects one of several input signals and forwards it to the output, based on the value of control inputs.  
+
+The simplest version is the **2-to-1 multiplexer**, which has two data inputs (D0 and D1), one control input (S), and one output (Y). If the control input is 0, the output is equal to D0. If the control input is 1, the output is equal to D1. In Boolean form: `Y = S'D0 + SD1`.  
+
+Multiplexers are used extensively in computer datapaths to select between different sources of data. For instance, when updating a register, the CPU may use a multiplexer to decide whether the value comes from an arithmetic operation, a memory load, or an immediate constant.  
+
+---
+
+### 2.3 Decoders and Encoders  
+
+Another important family of combinational circuits is **decoders** and **encoders**.  
+
+A **decoder** takes an n-bit binary input and activates exactly one of 2ⁿ outputs. For example, a 2-to-4 decoder has two inputs and four outputs. If the input is `10` (binary for 2), then output line 2 becomes active while all others remain inactive. Decoders are used in memory addressing and instruction decoding, where a small binary value selects one of many options.  
+
+An **encoder** performs the reverse operation: it takes 2ⁿ possible inputs and produces an n-bit binary output corresponding to the active input. Encoders are useful in applications such as keyboards, where pressing one key out of many must be translated into a binary code.  
+
+---
+
+### 2.4 Adders  
+
+Arithmetic is at the core of computation, and adders are the simplest circuits that perform it.  
+
+A **half adder** adds two binary inputs, A and B. It produces two outputs: the **sum** (`A ⊕ B`) and the **carry** (`A · B`). For example, adding 1 and 1 produces a sum of 0 with a carry of 1.  
+
+A **full adder** extends this by including a carry-in input, Cin, which allows it to add three binary inputs. The outputs are:  
+- Sum = `A ⊕ B ⊕ Cin`  
+- Carry = `(A · B) + (Cin · (A ⊕ B))`  
+
+By connecting multiple full adders in sequence, we can create a **ripple-carry adder** capable of adding multi-bit numbers. Each adder passes its carry-out to the next stage as carry-in, which means the carry “ripples” through the circuit. This makes ripple-carry adders conceptually simple but relatively slow for large word sizes, because the carry must propagate through all stages.  
+
+**Worked Example:** Add `1011₂` (11 in decimal) and `0110₂` (6 in decimal) using a ripple-carry adder.  
+
+- Rightmost bit: 1 + 0 = 1 (carry 0).  
+- Next bit: 1 + 1 = 0, with carry 1.  
+- Next bit: 0 + 1 + 1 (carry) = 0, with carry 1.  
+- Leftmost bit: 1 + 0 + 1 (carry) = 0, with carry 1.  
+
+Final result: `0001 0001₂`, or 17 in decimal.  
+
+---
+
+## 3. Sequential Logic (§A.4)  
+
+### 3.1 Why Sequential Logic?  
+
+Combinational circuits are powerful, but they have one limitation: they cannot remember past inputs. Computers, however, require memory to store data, track program execution, and maintain state. To accomplish this, we need **sequential logic circuits**, which use feedback loops to store information across time.  
+
+---
+
+### 3.2 Latches  
+
+The simplest form of sequential logic is the **latch**. A latch can store one bit of information and maintain its output until it is explicitly changed.  
+
+An **SR latch** (Set-Reset latch) is constructed from two cross-coupled NOR gates. It has two inputs, S (set) and R (reset). If S is activated, the latch stores a 1. If R is activated, it stores a 0. If both inputs are inactive, the latch holds its previous state. One problem with this design is that if both inputs are activated simultaneously, the latch enters an invalid or unpredictable state.  
+
+---
+
+### 3.3 Flip-Flops  
+
+To address the limitations of latches, digital systems use **flip-flops**, which are edge-triggered storage elements. A flip-flop changes state only at the transition of a clock signal, typically the rising edge.  
+
+The most common flip-flop is the **D flip-flop**. It has two inputs: D (data) and CLK (clock). On the rising edge of the clock, the value on D is stored and appears on the output Q. Until the next clock edge, the output remains constant, regardless of changes to D. This makes flip-flops predictable and reliable building blocks for sequential circuits.  
+
+Flip-flops allow designers to synchronize circuits with a clock, ensuring that data flows through the system in an orderly fashion.  
+
+---
+
+### 3.4 Registers  
+
+By combining multiple flip-flops, we can create a **register**, which stores a multi-bit value. A 4-bit register, for example, uses four flip-flops, one for each bit. Registers are fundamental components of CPUs, where they store data, instructions, and memory addresses.  
+
+For example, suppose a 4-bit register currently holds the value `1010₂`. If new data `1100₂` is applied to the inputs, the output will not immediately change. Instead, the register will update to `1100₂` only at the next clock edge. This property ensures that all registers in a CPU update simultaneously, keeping the processor synchronized.  
+
+Registers are essential for implementing the program counter, general-purpose registers, and pipeline registers in modern processors.  
+
+---
+
+## 4. Transition to CPU Design (Preview)  
+
+This week’s material introduced the building blocks of digital logic: gates, combinational circuits, and sequential circuits. Combinational circuits enable arithmetic and decision-making, while sequential circuits provide memory and state. Together, these form the foundation of the **datapath** of a CPU.  
+
+In the coming weeks, we will build upon this foundation to explore how these simple components are combined into larger functional units, such as the arithmetic-logic unit (ALU), the control unit, and the memory system. Next week, we will focus on **data representation** — how integers, signed numbers, and floating-point values are encoded in binary — which will prepare us to understand arithmetic in hardware more deeply.  

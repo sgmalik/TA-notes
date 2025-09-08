@@ -33,7 +33,7 @@ Computers run on binary instructions, programming languages make these instructi
 
 A modern computer system can be understood as four interacting parts: the **CPU**, **memory**, **I/O devices**, and the **buses** that connect them.  
 
-![Five classic components of a computer](5-classic.png)
+![Five classic components of a computer](images/5-classic.png)
 
 The **CPU (Central Processing Unit)** is the “brain” of the computer. It has two primary subsystems: the **control unit**, which directs the flow of instructions and data, and the **datapath**, which contains the arithmetic and logic unit (ALU) and registers. The ALU carries out basic operations such as addition, subtraction, and comparisons, while registers provide very small but extremely fast storage locations inside the CPU.  
 
