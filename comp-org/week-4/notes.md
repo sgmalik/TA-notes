@@ -128,17 +128,50 @@ Now, you might be thinking, how is the control input decided? Refering back to o
 
 In the CPU, after each instruction the **program counter (PC)** is updated. Depending on the instruction, a different operation occurs. If it is a normal instruction then the next PC should be 4 more than the current PC but if its' a branch instruction, the next PC should be a completely different address representing the branch target. These become the two data inputs:
 - If the instruction is not a branch, then the control unit sets `S = 0`, causing the MUX to output `D0 = PC + 4`
-- If the instruction is a branch, the control unit sets `S = 0`, causing the MUX to output `D1 = branch target`.
+- If the instruction is a branch, the control unit sets `S = 0`, causing the MUX to output `D1 = branch target`. This is an example of a *selection circuit*; the select line(s) control **which input** is sent to the output based on some condition.
 
 ---
 
 ### 2.2 Decoders and Encoders  
 
-Another important family of combinational circuits is **decoders** and **encoders**.  
+Another combinational circuit that we will see frequently are decoders and encoders, with decoders also being selection circuits.
 
-A **decoder** takes an n-bit binary input and activates exactly one of 2ⁿ outputs. For example, a 2-to-4 decoder has two inputs and four outputs. If the input is `10` (binary for 2), then output line 2 becomes active while all others remain inactive. Decoders are used in memory addressing and instruction decoding, where a small binary value selects one of many options.  
+#### Decoder
 
-An **encoder** performs the reverse operation: it takes 2ⁿ possible inputs and produces an n-bit binary output corresponding to the active input. Encoders are useful in applications such as keyboards, where pressing one key out of many must be translated into a binary code.  
+A **decoder** takes in an n-bit binary input and activates a certain output based on its' value. In total, there are 2ⁿ outputs with *n* being the number of bits. The input essentially tells the circuit which output should be turned on (success, signal of 1 is emmitted) and which outputs should be off (blocked, signal of 0 is emmitted).
+
+For example -> A **2-to-4 decoder** has two inputs, B1 and B0, and four outputs, Y3, Y2, Y1, and Y0. Here is the truth table for reference:
+
+| B1 | B0 | Y0 | Y1 | Y2 | Y3 |
+|----|----|----|----|----|----|
+|  0 |  0 |  1 |  0 |  0 |  0 |
+|  0 |  1 |  0 |  1 |  0 |  0 |
+|  1 |  0 |  0 |  0 |  1 |  0 |
+|  1 |  1 |  0 |  0 |  0 |  1 |
+
+Here are the boolean equations for a **2-to-4** decoder: 
+- Y0 = B1' · B0' -> `Y0` is active when neither `B1` and `B0` are
+- Y1 = B1' · B0  -> `Y1` is active when `B1` is not active and `B0` is
+- Y2 = B1 · B0'  -> `Y2` is active when `B1` is active and `B0` is not
+- Y3 = B1 · B0 -> `Y3` is active when `B1` and `B0` are both active
+
+> [!NOTE]
+> If the input is `10` which is the binary for 2, the corresponding output line 2 becomes active, this can be useful for memory operations as well as interpreting instruction sets.
+
+#### Encoder
+
+An **encoder** does the reverse of a decoder, taking in 2ⁿ input codes, with exactly *1* of them being active, and produces an n-bit binary output that corresponds to this. Encoders and decoders mirror each other.
+
+For example, this would be the truth table for our **4-to-2 encoder**, looks similar to the decoder right:
+
+| Y3 | Y2 | Y1 | Y0 | B1 | B0 |
+|----|----|----|----|----|----|
+|  1 |  0 |  0 |  0 |  0 |  0 |
+|  0 |  1 |  0 |  0 |  0 |  1 |
+|  0 |  0 |  1 |  0 |  1 |  0 |
+|  0 |  0 |  0 |  1 |  1 |  1 |
+
+Some practical examples of this are a keyboard. Each key is wired to a seperate line where when you press that key, it becomes active and the encoder emits the binary code for that given key. There are multiple different inputs, but you only care about the single key you pressed abd what should happen when you press that *specific key*.
 
 ---
 
