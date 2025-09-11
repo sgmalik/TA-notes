@@ -27,6 +27,8 @@ Some of these should be very familiar especially if you've taken some sort of lo
 *> [!NOTE]
 > In the context of logic gates, we will use 0 and 1 for the output with 0 representing False and 1 representing True
 
+![Logic Gates](images/logic-gates.png)
+
 ### 1.1 Basic Gates  
 
 #### AND Gate
@@ -129,6 +131,8 @@ Now, you might be thinking, how is the control input decided? Refering back to o
 In the CPU, after each instruction the **program counter (PC)** is updated. Depending on the instruction, a different operation occurs. If it is a normal instruction then the next PC should be 4 more than the current PC but if its' a branch instruction, the next PC should be a completely different address representing the branch target. These become the two data inputs:
 - If the instruction is not a branch, then the control unit sets `S = 0`, causing the MUX to output `D0 = PC + 4`
 - If the instruction is a branch, the control unit sets `S = 0`, causing the MUX to output `D1 = branch target`. This is an example of a *selection circuit*; the select line(s) control **which input** is sent to the output based on some condition.
+
+![Multiplexers](images/multiplexers.png)
 
 ---
 
@@ -245,6 +249,8 @@ The simplest form of sequential logic is the **latch**. A latch can store one bi
 
 An **SR latch** (Set-Reset latch) is constructed from two cross-coupled NOR gates. It has two inputs, S (set) and R (reset). If S is activated, the latch stores a 1. If R is activated, it stores a 0. If both inputs are inactive, the latch holds its previous state. One problem with this design is that if both inputs are activated simultaneously, the latch enters an invalid or unpredictable state.  
 
+![Latches](images/latch.png)
+
 ---
 
 ### 3.2 Flip-Flops  
@@ -254,6 +260,8 @@ To address the limitations of latches, digital systems use **flip-flops**, which
 The most common flip-flop is the **D flip-flop**. It has two inputs: D (data) and CLK (clock). On the rising edge of the clock, the value on D is stored and appears on the output Q. Until the next clock edge, the output remains constant, regardless of changes to D. This makes flip-flops predictable and reliable building blocks for sequential circuits.  
 
 Flip-flops allow designers to synchronize circuits with a clock, ensuring that data flows through the system in an orderly fashion.  
+
+![Flip-Flops](images/flip-flops.png)
 
 ---
 
@@ -265,6 +273,21 @@ For example, suppose a 4-bit register currently holds the value `1010₂`. If ne
 
 Registers are essential for implementing the program counter, general-purpose registers, and pipeline registers in modern processors.  
 
+### 3.4 Clocks  
+
+Sequential circuits rely on a **clock signal** to control when data is stored or updated. A clock is a repeating square wave that alternates between 0 (low) and 1 (high) at a fixed frequency.  
+
+The clock provides a global rhythm for the system. Instead of changing outputs immediately when inputs change, flip-flops and registers wait for a **clock edge**. On the rising edge (transition from 0 to 1), or sometimes the falling edge (1 to 0), the circuit captures its input and updates its output.  
+
+This synchronization ensures that all parts of the processor update together, avoiding race conditions and unpredictable behavior.  
+
+For example:  
+- A **D flip-flop** copies its input D to output Q only at the rising edge of the clock.  
+- A **register** updates all of its stored bits simultaneously at each clock tick.  
+
+Clock frequency (measured in hertz, cycles per second) sets the pace of computation. A 2 GHz clock ticks two billion times per second, meaning the CPU can potentially perform billions of synchronized updates each second.  
+
+![Clocks](images/clocks.png)
 ---
 
 ## 4. Transition to CPU Design (Preview)  
