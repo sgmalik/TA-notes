@@ -177,15 +177,47 @@ Some practical examples of this are a keyboard. Each key is wired to a seperate 
 
 ### 2.3 Adders  
 
-Arithmetic is at the core of computation, and adders are the simplest circuits that perform it.  
+Adders are the next circuit that we will discuss. Though very simple, these are at the core of computation, assisting with addition instructions and other arithmetic. When we calculate memory addresses, execute an addition instruction, or plenty of other day to day operationsl, we use adders, with the most common being the **half adder**.
 
-A **half adder** adds two binary inputs, A and B. It produces two outputs: the **sum** (`A ⊕ B`) and the **carry** (`A · B`). For example, adding 1 and 1 produces a sum of 0 with a carry of 1.  
+#### Half Adders
 
-A **full adder** extends this by including a carry-in input, Cin, which allows it to add three binary inputs. The outputs are:  
-- Sum = `A ⊕ B ⊕ Cin`  
-- Carry = `(A · B) + (Cin · (A ⊕ B))`  
+The **half adder** is by far the simplest of all the adder circuits. It adds two binary inputs and produces two outputs, the *sum* and the *carry*. To do this, we use logic-gates, specifically *XOR* and *AND*. 
+- The **sum** is given by the *XOR* of the inputs while the **carry** is given by the *AND* of the inputs. Here is the truth table for a half adder:
+  - Sum = A ⊕ B  
+  - Carry = A · B  
 
-By connecting multiple full adders in sequence, we can create a **ripple-carry adder** capable of adding multi-bit numbers. Each adder passes its carry-out to the next stage as carry-in, which means the carry “ripples” through the circuit. This makes ripple-carry adders conceptually simple but relatively slow for large word sizes, because the carry must propagate through all stages.  
+
+| A | B | Sum  | Carry |
+|---|---|-------------|---------------|
+| 0 | 0 |      0      |       0       |
+| 0 | 1 |      1      |       0       |
+| 1 | 0 |      1      |       0       |
+| 1 | 1 |      0      |       1       |
+
+#### Full Adders 
+
+Half adders are limited because it can only take in two inputs. In most addition scenarios, you often carry over from the previous column, which is why we have **full adders**. The **full adder** takes in *3* inputs instead of 2, with the 3rd being *Cin* (carry in). The **full adder** produces a *sum* and a *Cout (carry out)*.
+  - Sum = A ⊕ B ⊕ Cin  
+  - Cout = (A · B) + (Cin · (A ⊕ B))
+
+| A | B | Cin | Sum | Cout |
+|---|---|-----|--------------------|----------------------------------|
+| 0 | 0 |  0  |         0          |                0                 |
+| 0 | 0 |  1  |         1          |                0                 |
+| 0 | 1 |  0  |         1          |                0                 |
+| 0 | 1 |  1  |         0          |                1                 |
+| 1 | 0 |  0  |         1          |                0                 |
+| 1 | 0 |  1  |         0          |                1                 |
+| 1 | 1 |  0  |         0          |                1                 |
+| 1 | 1 |  1  |         1          |                1                 |
+
+#### Combining Adders
+
+When we want to perform addition between multi-bit numbers, we string together multiple full adders. Each full adder handles one bit position, and the carry-out of one, becomes the carry-in of the next. This is known as **ripple-carry**.
+> [!NOTE]
+> Example: To add two 4-bit numbers, we use 4 full adders, the least significant takes Cin = 0 and the chain begins
+
+The speed performance is not great in this approach as the carry-out of each adder depends on the result of the previous. This means delay grows linearly by the number of bits which can become a huge performance bottleneck.
 
 **Worked Example:** Add `1011₂` (11 in decimal) and `0110₂` (6 in decimal) using a ripple-carry adder.  
 
@@ -194,19 +226,20 @@ By connecting multiple full adders in sequence, we can create a **ripple-carry a
 - Next bit: 0 + 1 + 1 (carry) = 0, with carry 1.  
 - Leftmost bit: 1 + 0 + 1 (carry) = 0, with carry 1.  
 
-Final result: `0001 0001₂`, or 17 in decimal.  
+Final result: `0001 0001₂`, or 17 in decimal.  `
 
 ---
 
 ## 3. Sequential Logic (§A.4)  
 
-### 3.1 Why Sequential Logic?  
-
-Combinational circuits are powerful, but they have one limitation: they cannot remember past inputs. Computers, however, require memory to store data, track program execution, and maintain state. To accomplish this, we need **sequential logic circuits**, which use feedback loops to store information across time.  
+Combinational circuits are very powerful tools that enable more complex forms of computation, but they have one major pitfall: they have no memory. The output of a combinational circuit relies ourely on the current inputs and once those change, the output immediately changes with no recollection of its' past state. This ability to remember requires a circuit with *feedback*, which gets fed back into the input to maintain state. These are what's known as **sequential circuits**. The three that we will discuss for now are:
+1. Latches
+2. Flip-Flops
+3. Registers
 
 ---
 
-### 3.2 Latches  
+### 3.1 Latches  
 
 The simplest form of sequential logic is the **latch**. A latch can store one bit of information and maintain its output until it is explicitly changed.  
 
@@ -214,7 +247,7 @@ An **SR latch** (Set-Reset latch) is constructed from two cross-coupled NOR gate
 
 ---
 
-### 3.3 Flip-Flops  
+### 3.2 Flip-Flops  
 
 To address the limitations of latches, digital systems use **flip-flops**, which are edge-triggered storage elements. A flip-flop changes state only at the transition of a clock signal, typically the rising edge.  
 
@@ -224,7 +257,7 @@ Flip-flops allow designers to synchronize circuits with a clock, ensuring that d
 
 ---
 
-### 3.4 Registers  
+### 3.3 Registers  
 
 By combining multiple flip-flops, we can create a **register**, which stores a multi-bit value. A 4-bit register, for example, uses four flip-flops, one for each bit. Registers are fundamental components of CPUs, where they store data, instructions, and memory addresses.  
 
