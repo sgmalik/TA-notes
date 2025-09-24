@@ -15,7 +15,7 @@
   - ~~Try to make the outline first and then test implementation, no objects in C so need to make logic gates manually~~
   - ~~Python or C -> If too hard in C then use OOP in python~~
 - ~~Review Project Doc~~
-- ~~Expanding weeks 5 and 6, baseline in need to rereference textbook and reword things~
+- ~~Expanding weeks 5 and 6, baseline in need to rereference textbook and reword things~~
 
 ## IN PROGRESS
 
