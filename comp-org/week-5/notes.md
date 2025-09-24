@@ -29,7 +29,7 @@ Physically, this is implemented as a low or high voltage.
   - In a 32-bit ARMv7 processor, a word is 32 bits (4 bytes).  
   - In a 64-bit ARMv8 processor, a word is 64 bits (8 bytes).  
 
-For example, the decimal value `300₁₀` is equal to `100101100₂`.  
+For example, the decimal value $300_{10}$ is equal to $100101100_{2}$.  
 This requires 9 bits to store.  
 Since memory can only address whole bytes, at least 2 bytes are required.  
 
@@ -47,33 +47,35 @@ Alignment ensures efficient memory access.
 Binary numbers are represented using **positional notation**, similar to decimal numbers but with base 2.  
 Each position corresponds to a power of 2.  
 
-For an n-bit binary number:  
+For an $n$-bit binary number:  
 
-`Value = (bₙ₋₁ × 2ⁿ⁻¹) + (bₙ₋₂ × 2ⁿ⁻²) + … + (b₁ × 2¹) + (b₀ × 2⁰)`  
+$$
+\text{Value} = (b_{n-1} \times 2^{n-1}) + (b_{n-2} \times 2^{n-2}) + \cdots + (b_{1} \times 2^{1}) + (b_{0} \times 2^{0})
+$$  
 
 **Example:**  
-`1101₂ = (1 × 8) + (1 × 4) + (0 × 2) + (1 × 1) = 13₁₀`  
+$$1101_{2} = (1 \times 8) + (1 \times 4) + (0 \times 2) + (1 \times 1) = 13_{10}$$  
 
 ### Range of unsigned values  
 
-- An n-bit unsigned integer can represent values from `0` to `2ⁿ – 1`.  
+- An $n$-bit unsigned integer can represent values from $0$ to $2^{n} - 1$.  
 - Examples:  
-  - 8-bit unsigned: `0 → 255`  
-  - 16-bit unsigned: `0 → 65,535`  
-  - 32-bit unsigned: `0 → 4,294,967,295`  
+  - 8-bit unsigned: $0 \rightarrow 255$  
+  - 16-bit unsigned: $0 \rightarrow 65{,}535$  
+  - 32-bit unsigned: $0 \rightarrow 4{,}294{,}967{,}295$  
 
 ### Overflow in unsigned arithmetic  
 
 Since registers have fixed width, results that exceed the maximum representable value **wrap around**.  
 
 **Example (8-bit):**  
-`11111111₂ (255) + 1 = 00000000₂ (0)`  
+$$11111111_{2} \; (255) + 1 = 00000000_{2} \; (0)$$  
 
 The 9th bit is discarded, producing wraparound.  
 
 ::: {.callout-tip collapse="false" title="Note"}
-In C and most modern languages, unsigned arithmetic is explicitly defined as modulo `2ⁿ`.  
-:::  
+In C and most modern languages, unsigned arithmetic is explicitly defined as modulo $2^{n}$.  
+:::
 
 ---
 
@@ -84,16 +86,16 @@ Several historical methods were developed to represent signed integers, but mode
 
 ### 3.1 Sign-and-Magnitude  
 
-The most intuitive scheme uses the leftmost bit to indicate sign (`0 = positive, 1 = negative`), with the remaining bits giving the magnitude.  
+The most intuitive scheme uses the leftmost bit to indicate sign ($0 = \text{positive}, \; 1 = \text{negative}$), with the remaining bits giving the magnitude.  
 
-- Example (4-bit): `1001₂ = –9`.  
-- Problem: Two encodings for zero (`0000 = +0`, `1000 = –0`).  
+- Example (4-bit): $1001_{2} = -9$.  
+- Problem: Two encodings for zero ($0000 = +0$, $1000 = -0$).  
 
 ### 3.2 One’s Complement  
 
 Negative numbers are obtained by flipping all the bits of the positive representation.  
 
-- Example (4-bit): `+5 = 0101`, `–5 = 1010`.  
+- Example (4-bit): $+5 = 0101$, $-5 = 1010$.  
 - Problem: Still has two encodings for zero.  
 
 ### 3.3 Two’s Complement (standard today)  
@@ -101,15 +103,15 @@ Negative numbers are obtained by flipping all the bits of the positive represent
 Negative numbers are represented by inverting all bits of the positive number and then adding 1.  
 
 - Example (4-bit):  
-  - `+6 = 0110`  
-  - `–6 = invert(0110) = 1001 + 1 = 1010`  
+  - $+6 = 0110$  
+  - $-6 = \text{invert}(0110) = 1001 + 1 = 1010$  
 
 ### Range of two’s complement  
 
-An n-bit two’s complement number represents values from `–2ⁿ⁻¹` to `2ⁿ⁻¹ – 1`.  
+An $n$-bit two’s complement number represents values from $-2^{\,n-1}$ to $2^{\,n-1} - 1$.  
 
-- 4-bit: `–8 → +7`  
-- 32-bit: `–2,147,483,648 → +2,147,483,647`  
+- 4-bit: $-8 \;\rightarrow\; +7$  
+- 32-bit: $-2{,}147{,}483{,}648 \;\rightarrow\; +2{,}147{,}483{,}647$  
 
 ### Why two’s complement?  
 
@@ -145,9 +147,9 @@ Two’s complement arithmetic follows the same binary addition rules, with resul
 
 ### Example of overflow  
 
-`0111 (7) + 0001 (1) = 1000 (–8)`  
+$0111_{2} \; (7) + 0001_{2} \; (1) = 1000_{2} \; (-8)$  
 
-The 4-bit signed range is `–8 → +7`, so the result has overflowed.  
+The 4-bit signed range is $-8 \;\rightarrow\; +7$, so the result has overflowed.  
 
 ### Detecting overflow  
 
@@ -181,7 +183,7 @@ int main(void){
 
 Subtraction is performed by adding the two’s complement of the subtrahend.  
 
-Example: `5 – 3` is equivalent to `5 + (–3)`.  
+**Example:** $5 - 3$ is equivalent to $5 + (-3)$.  
 
 #### Code Snippet
 
