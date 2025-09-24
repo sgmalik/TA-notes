@@ -117,9 +117,9 @@ An n-bit two’s complement number represents values from `–2ⁿ⁻¹` to `2�
 - Addition and subtraction use the **same adder circuits** as unsigned numbers.  
 - The carry out from the most significant bit can be ignored.  
 
-### Code Snippet (C)
+### Code Snippet
 
-```
+```c
 
 #include <stdint.h>
 #include <stdio.h>
@@ -157,7 +157,7 @@ The 4-bit signed range is `–8 → +7`, so the result has overflowed.
 
 #### Code Snippet
 
-```
+```c
 
 #include <stdint.h>
 #include <stdio.h>
@@ -185,7 +185,7 @@ Example: `5 – 3` is equivalent to `5 + (–3)`.
 
 #### Code Snippet
 
-```
+```c
 
 #include <stdint.h>
 #include <stdio.h>

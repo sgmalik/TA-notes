@@ -23,37 +23,37 @@ Bitwise operations ignore numeric meaning and instead work directly on the indiv
 Each bit of the output depends only on the corresponding input bits.  
 
 - **AND (`&`)**: Produces `1` only if both inputs are `1`.  
-  - Example: `1101₂ & 1011₂ = 1001₂`.  
+  - Example: $1101_{2}$ & $1011_{2}$ = $1001_{2}$.  
 - **OR (`|`)**: Produces `1` if either input is `1`.  
-  - Example: `1101₂ | 1011₂ = 1111₂`.  
-- **XOR (`⊕`)**: Produces `1` if the inputs differ.  
-  - Example: `1101₂ ⊕ 1011₂ = 0110₂`.  
+  - Example: $1101_{2}$ | $1011_{2}$ = $1111_{2}$.  
+- **XOR** ($\oplus)$: Produces `1` if the inputs differ.  
+  - Example: $1101_{2}$ $\oplus$ $1011_{2}$ = $0110_{2}$.  
 - **NOT (`~`)**: Inverts all bits.  
-  - Example: `~1101₂ = 0010₂` (in 4-bit representation).  
+  - Example: `~$1101_{2}$ = $0010_{2}$ (in 4-bit representation).  
 
 ### Shift operations  
 
 - **Logical left shift:** Shifts bits left, filling with zeros on the right.  
   Equivalent to multiplying by powers of 2.  
-  - Example: `00010101₂ << 2 = 01010100₂` (21 shifted left 2 = 84).  
+  - Example: $00010101_{2}$ << 2 = $01010100_{2}$ (21 shifted left 2 = 84).  
 
 - **Logical right shift:** Shifts bits right, filling with zeros on the left.  
   Equivalent to dividing by powers of 2.  
-  - Example: `10010000₂ >> 3 = 00010010₂` (144 shifted right 3 = 18).  
+  - Example: $10010000_{2}$ >> 3 = $00010010_{2}$ (144 shifted right 3 = 18).  
 
 - **Arithmetic right shift:** Preserves the sign bit (the leftmost bit in two’s complement) while shifting right.  
-  - Example: `11101000₂ (–24)` arithmetic right shift by 2 = `11111010₂ (–6)`.  
+  - Example: $11101000_{2}$ (–24) arithmetic right shift by 2 = $11111010_{2}$ (–6).  
 
 ### Applications of bitwise operations  
 
 - **Masking bits:** Using AND with a mask isolates certain bits.  
-  - Example: `10111101₂ & 00001111₂ = 00001101₂` extracts the lower 4 bits.  
+  - Example: $10111101_{2}$ & $00001111_{2}$ = $00001101_{2}$ extracts the lower 4 bits.  
 
 - **Clearing bits:** Mask with AND and zeros.  
-  - Example: `10111101₂ & 11110000₂ = 10110000₂` clears the lower 4 bits.  
+  - Example: $10111101_{2}$ & $11110000_{2}$ = $10110000_{2}$ clears the lower 4 bits.  
 
 - **Setting bits:** Mask with OR and ones.  
-  - Example: `10010000₂ | 00001111₂ = 10011111₂`.  
+  - Example: $10010000_{2}$ | $00001111_{2}$ = $10011111_{2}$.  
 
 - **Toggling bits:** XOR with ones flips certain bits.  
 
@@ -64,7 +64,7 @@ They are also the basis of instruction decoding and field extraction in CPU desi
 
 ### Code Snippet
 
-```
+```c
 
 #include <stdint.h>
 #include <stdio.h>
@@ -111,7 +111,7 @@ Instruction fields (opcode, register indices, immediate values) are simply slice
 Masks and shifts let software extract and modify these slices without ambiguity.  
 :::
 
-```
+```c
 
 #include <stdint.h>
 #include <stdio.h>
@@ -149,11 +149,11 @@ Integers cannot express fractions.
 The simplest way to store fractional values is **fixed-point representation**, where the binary point (like a decimal point in base 10) is placed at a predetermined position.  
 
 **Example:**  
-`101.101₂ = 4 + 0 + 1 + 0.5 + 0 + 0.125 = 5.625₁₀`.  
+$101.101_{2} = 4 + 0 + 1 + 0.5 + 0 + 0.125 = 5.625_{10}$  
 
 In this case:  
-- Bits to the left of the binary point represent powers of 2 (`2² = 4`, `2¹ = 2`, `2⁰ = 1`).  
-- Bits to the right represent fractions (`2⁻¹ = 0.5`, `2⁻² = 0.25`, `2⁻³ = 0.125`).  
+- Bits to the left of the binary point represent powers of 2 ($2^{2} = 4$, $2^{1} = 2$, $2^{0} = 1$).  
+- Bits to the right represent fractions ($2^{-1} = 0.5$, $2^{-2} = 0.25$, $2^{-3} = 0.125$).  
 
 ### Advantages of fixed-point  
 
@@ -164,18 +164,18 @@ In this case:
 
 - Precision and range are both fixed.  
 - Example: With 8 bits and 4 fractional bits:  
-  - Largest representable value = `1111.1111₂ = 15.9375`.  
-  - Smallest increment = `0.0001₂ = 1/16 = 0.0625`.  
+  - Largest representable value = $1111.1111_{2} = 15.9375$  
+  - Smallest increment = $0.0001_{2} = \tfrac{1}{16} = 0.0625$  
 - Cannot dynamically adjust to represent both very large and very small numbers.  
 
 ::: {.callout-important collapse="false" title="Key takeaway"}
 Fixed-point works when the range of expected values is known in advance, but it is not general-purpose enough for modern computing.  
 This limitation is why floating-point representation became the standard.  
-:::  
+:::
 
 ### Code Snippet
 
-```
+```c
 
 #include <stdint.h>
 #include <stdio.h>
@@ -230,7 +230,7 @@ However, it requires careful scaling and awareness of overflow.
 To handle a vast range of values with limited bits, computers use **floating-point numbers**, modeled after scientific notation.  
 
 General form:  
-`(–1)^sign × 1.fraction × 2^(exponent – bias)`.  
+$(-1)^{\text{sign}} \times 1.\text{fraction} \times 2^{(\text{exponent} - \text{bias})}$
 
 ### 32-bit single precision  
 
@@ -246,23 +246,23 @@ General form:
 
 **Example: Represent 6.5 in single precision**  
 
-- Step 1: Convert to binary → `110.1₂`.  
-- Step 2: Normalize → `1.101₂ × 2^2`.  
-- Step 3: Sign = 0 (positive).  
-- Step 4: Exponent = 2 + 127 = 129 = `10000001₂`.  
-- Step 5: Fraction = `.101` → `101000...` (padded to 23 bits).  
+- Step 1: Convert to binary → $110.1_{2}$.  
+- Step 2: Normalize → $1.101_{2} \times 2^{2}$.  
+- Step 3: Sign $= 0$ (positive).  
+- Step 4: Exponent $= 2 + 127 = 129 = 10000001_{2}$.  
+- Step 5: Fraction $= .101 \;\rightarrow\; 101000\ldots$ (padded to 23 bits).  
 
 Final representation:  
-`0 10000001 10100000000000000000000`.  
+$0 \; 10000001 \; 10100000000000000000000$  
 
 ::: {.callout-tip collapse="false" title="Range of floating-point"}
-Floating-point allows the same 32-bit pattern to represent values as small as approximately `10^–38` and as large as approximately `10^38`.  
+Floating-point allows the same 32-bit pattern to represent values as small as approximately $10^{-38}$ and as large as approximately $10^{38}$.  
 This enormous dynamic range is what makes floating-point indispensable in scientific and engineering computation.  
-:::  
+:::
 
 #### Code Snippet
 
-```
+```c
 
 #include <stdint.h>
 #include <stdio.h>
@@ -330,11 +330,11 @@ Floating-point arithmetic is more complex than integer arithmetic because of nor
 
 **Example: 1.5 + 2.25**  
 
-- `1.5 = 1.1₂ × 2^0`.  
-- `2.25 = 1.001₂ × 2^1`.  
-- Align → `1.5 = 0.11₂ × 2^1`.  
-- Add → `0.11₂ + 1.001₂ = 1.111₂`.  
-- Normalize → `1.111₂ × 2^1 = 3.75₁₀`.  
+- $1.5 = 1.1_{2} \times 2^{0}$  
+- $2.25 = 1.001_{2} \times 2^{1}$  
+- Align $\;\rightarrow\;$ $1.5 = 0.11_{2} \times 2^{1}$  
+- Add $\;\rightarrow\;$ $0.11_{2} + 1.001_{2} = 1.111_{2}$  
+- Normalize $\;\rightarrow\;$ $1.111_{2} \times 2^{1} = 3.75_{10}$  
 
 ### Multiplication and division  
 
@@ -359,7 +359,7 @@ It also means floating-point arithmetic is not exact — tiny errors can accumul
 
 ### Code Snippet
 
-```
+```c
 
 #include <stdio.h>
 #include <float.h>
@@ -407,15 +407,15 @@ Floating-point has special bit patterns to handle cases outside normal arithmeti
 - **Zero:** Exponent = 0, fraction = 0.  
   There are +0 and –0, but they behave the same in most operations.  
 
-- **Denormalized numbers:** Exponent = 0, fraction ≠ 0.  
+- **Denormalized numbers:** Exponent = 0, fraction $\neq$ 0.  
   These represent values very close to zero, filling the gap between zero and the smallest normalized number.  
 
 - **Infinity:** Exponent = all 1s, fraction = 0.  
   Results from overflow or division by zero.  
-  Can be +∞ or –∞.  
+  Can be $+\infty$ or $-\infty$.  
 
-- **NaN (Not a Number):** Exponent = all 1s, fraction ≠ 0.  
-  Used for invalid operations such as `0/0`, `∞ – ∞`, or the square root of a negative number.  
+- **NaN (Not a Number):** Exponent = all 1s, fraction $\neq$ 0.  
+  Used for invalid operations such as `0/0`, $\infty$ - $\infty$, or the square root of a negative number.  
 
 ::: {.callout-important collapse="false" title="Robustness"}
 These rules make floating-point arithmetic robust and allow programs to continue executing even when encountering unusual values.  
@@ -424,7 +424,7 @@ Instead of crashing, computations produce Infinity or NaN, which can then be tes
 
 ### Code Snippet
 
-```
+```c
 
 #include <stdio.h>
 #include <math.h>
@@ -461,7 +461,7 @@ IEEE 754 defines explicit encodings for Infinity and NaN so that computations ca
 Software can detect these values and handle them explicitly, which is vital in scientific computing.  
 ::: 
 
-```
+```c
 
 #include <stdio.h>
 #include <float.h>
