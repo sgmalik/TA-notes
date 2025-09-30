@@ -2,7 +2,7 @@ import subprocess
 import re
 from pathlib import Path
 import unittest
-from proc import run_flake8
+from .proc import run_flake8
 from gradescope_utils.autograder_utils.decorators import partial_credit
 
 
