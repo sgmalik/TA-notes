@@ -115,6 +115,7 @@ class TestAdder(unittest.TestCase):
 
         if self.mode == "py":
             import ripple
+
             for i, test in enumerate(FULL_ADDER_TESTS):
                 arguments, expected = test
                 actual = ripple.full_adder(*arguments)
@@ -122,10 +123,8 @@ class TestAdder(unittest.TestCase):
                     score += 1
                 else:
                     print(
-                        f"On input {arguments}, "
-                        f"expected: {expected} "
-                        f"Actual: {actual}"
-                        )
+                        f"On input {arguments}, expected: {expected} Actual: {actual}"
+                    )
         elif self.mode == "c":
             for args, expected in FULL_ADDER_TESTS:
                 result = subprocess.run(
@@ -195,7 +194,7 @@ class TestAdder(unittest.TestCase):
     def test_styling(self, set_score):
         score = 0
         if self.mode == "py":
-            output = run_flake8(self.target_file, args=["--config", "flake8.cfg"])
+            output = run_flake8(self.target_file, args=["--config", "autograder/flake8.cfg"])
 
             # print(output.stdout)
             e211 = -output.stdout.count("E211")
@@ -221,11 +220,18 @@ class TestAdder(unittest.TestCase):
         elif self.mode == "c":
             try:
                 output = subprocess.run(
-                    ["clang-format", "--dry-run", "--Werror", "ripple.c"],
+                    [
+                        "clang-format",
+                        "--dry-run",
+                        "--Werror",
+                        "-style=file",
+                        "-assume-filename=autograder/.clang-format",
+                        "ripple.c",
+                    ],
                     capture_output=True,
                     text=True,
-                    timeout=5
-                ) 
+                    timeout=5,
+                )
                 if output.returncode != 0:
                     violations = output.stderr.count("error:")
                     print(f"Violations with Clang detected:\n {output.stderr}")
