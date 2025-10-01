@@ -116,7 +116,7 @@ class TestAdder(unittest.TestCase):
         if self.mode == "py":
             import ripple
 
-            for i, test in enumerate(FULL_ADDER_TESTS):
+            for _, test in enumerate(FULL_ADDER_TESTS):
                 arguments, expected = test
                 actual = ripple.full_adder(*arguments)
                 if expected == actual:
@@ -194,7 +194,9 @@ class TestAdder(unittest.TestCase):
     def test_styling(self, set_score):
         score = 0
         if self.mode == "py":
-            output = run_flake8(self.target_file, args=["--config", "autograder/flake8.cfg"])
+            output = run_flake8(
+                self.target_file, args=["--config", "autograder/flake8.cfg"]
+            )
 
             # print(output.stdout)
             e211 = -output.stdout.count("E211")
@@ -236,6 +238,34 @@ class TestAdder(unittest.TestCase):
                     violations = output.stderr.count("error:")
                     print(f"Violations with Clang detected:\n {output.stderr}")
                     score = -min(10, violations * 0.5)
+
+                # Check linting with clang-tidy
+                tidy_output = subprocess.run(
+                    [
+                        "clang-tidy",
+                        "ripple.c",
+                        "--quiet",
+                        "--",
+                        "-std=c99",
+                        "-Wall",
+                        "-Wextra",
+                        "-pedantic",
+                        "-isysroot",
+                        subprocess.check_output(["xcrun", "--show-sdk-path"])
+                        .decode()
+                        .strip(),
+                    ],
+                    capture_output=True,
+                    text=True,
+                    timeout=10,
+                )
+
+                if tidy_output.returncode != 0:
+                    warn_cnt = tidy_output.stdout.count("warning:")
+                    err_cnt = tidy_output.stdout.count("error:")
+                    print(f"clang-tidy diagnostics:\n{tidy_output.stdout}")
+                    score += -min(10, (warn_cnt + err_cnt) * 0.5)
+
             except Exception as e:
                 print(f"Clang formatting check failed: {e}")
                 score -= 10
