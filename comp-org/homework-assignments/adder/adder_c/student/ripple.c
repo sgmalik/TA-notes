@@ -2,131 +2,121 @@
 // Build:  gcc -std=c11 -Wall -Wextra adder.c -o adder
 // Run:    ./adder
 
-#include <stdio.h>
 #include <assert.h>
+#include <stdio.h>
 #include <stdlib.h>
 
-typedef struct { int sum; int carry; } SumCarry;      // for half/full adder
-typedef struct { int bits[4]; int carry;} RCAResult; // for ripple-carry adder
+typedef struct {
+  int sum;
+  int carry;
+} SumCarry;  // for half/full adder
+typedef struct {
+  int bits[4];
+  int carry;
+} RCAResult;  // for ripple-carry adder
 
 // Utilities
 int bits_to_bin(const int *bits, int len) {
-/*
- * Utility function for converting a list of bits 
- * into a number. Bits should be in ascending order 
- * of powers of two. This function is based on one 
- * of the solutions given in the previous homework.
- */
-    int b = 0;
-    for (int i = 0; i < len; ++i) {
-        b = b * 2 + bits[i];   // same as (b << 1) | bits[i]
-    }
-    return b;
+  int b = 0;
+  for (int i = 0; i < len; ++i) {
+    b = b * 2 + bits[i];  // same as (b << 1) | bits[i]
+  }
+  return b;
 }
 
 // Helper for printing binary
 void print_bin4(int x) {
-    for (int i = 3; i >= 0; --i) {
-        putchar(((x >> i) & 1) ? '1' : '0');
-    }
+  for (int i = 3; i >= 0; --i) {
+    putchar(((x >> i) & 1) ? '1' : '0');
+  }
 }
 
-// half_adder, full_adder return `SumCarry struct to mimic returning tuple in python -> Operations relatively the same
+// half_adder, full_adder return `SumCarry struct to mimic returning tuple in
+// python -> Operations relatively the same
 SumCarry half_adder(int a, int b) {
-  /*
-   *This is a *half adder*, which takes two single-bit operands and returns their sum and carry.
-   */
-    assert(a == 0 || a == 1);
-    assert(b == 0 || b == 1);
+  assert(a == 0 || a == 1);
+  assert(b == 0 || b == 1);
 
-    SumCarry r;
-    r.sum   = (a ^ b);   // XOR
-    r.carry = (a & b);   // AND
-    return r;
+  SumCarry r;
+  r.sum = (a ^ b);   // XOR
+  r.carry = (a & b); // AND
+  return r;
 }
 
 SumCarry full_adder(int a, int b, int c_in) {
-  /*
-   * Here you will implement a *full adder*, constructed from two half adders and an OR gate.
-  */
-    assert(a == 0 || a == 1);
-    assert(b == 0 || b == 1);
-    assert(c_in == 0 || c_in == 1);
-    
-    // COMPLETE THIS FUNCTION, call half_adder TWICE
-    
-    return r;
+  assert(a == 0 || a == 1);
+  assert(b == 0 || b == 1);
+  assert(c_in == 0 || c_in == 1);
+
+  SumCarry h1 = half_adder(a, b);
+  SumCarry h2 = half_adder(h1.sum, c_in);
+
+  SumCarry r;
+  r.sum = h2.sum;
+  r.carry = (h1.carry | h2.carry); // OR
+  return r;
 }
 
-// ripple_carry_adder returns RCAResult struct with final int in binary plus carry if applicable
+// ripple_carry_adder returns RCAResult struct with final int in binary plus
+// carry if applicable
 RCAResult ripple_carry_adder(unsigned a, unsigned b) {
-  /*
-   * Here you will implement a 4-bit ripple-carry adder.
-   * This takes as arguments two 4-bit (unsigned) binary 
-   * numbers. This should return a tuple the first element 
-   * of which is the carry out, and the second element of 
-   * which is a list of bits in descending powers of two.
-  */
-    assert(a <= 15); // 4-bit
-    assert(b <= 15);
+  assert(a <= 15); // 4-bit
+  assert(b <= 15);
 
-    int a0 = (a >> 0) & 1;
-    int a1 = (a >> 1) & 1;
-    int a2 = (a >> 2) & 1;
-    int a3 = // COMPLETE
+  int a0 = (a >> 0) & 1;
+  int a1 = (a >> 1) & 1;
+  int a2 = (a >> 2) & 1;
+  int a3 = (a >> 3) & 1;
 
-    int b0 = (b >> 0) & 1;
-    int b1 = // COMPLETE 
-    int b2 = // COMPLETE 
-    int b3 = // COMPLETE 
+  int b0 = (b >> 0) & 1;
+  int b1 = (b >> 1) & 1;
+  int b2 = (b >> 2) & 1;
+  int b3 = (b >> 3) & 1;
 
-    // MAKE 4 CALLS TO full_adder
-    SumCarry s0 = // COMPLETE 
-    SumCarry s1 = // COMPLETE 
-    SumCarry s2 = // COMPLETE 
-    SumCarry s3 = // COMPLETE 
+  SumCarry s0 = full_adder(a0, b0, 0);
+  SumCarry s1 = full_adder(a1, b1, s0.carry);
+  SumCarry s2 = full_adder(a2, b2, s1.carry);
+  SumCarry s3 = full_adder(a3, b3, s2.carry);
 
-    RCAResult r;
-    r.bits[0] = s3.sum;  // MSB
-    r.bits[1] = s2.sum;
-    r.bits[2] = s1.sum;
-    r.bits[3] = s0.sum;  // LSB
-    r.carry   = s3.carry;
-
-    return r;
+  RCAResult r;
+  r.bits[0] = s3.sum; // MSB
+  r.bits[1] = s2.sum;
+  r.bits[2] = s1.sum;
+  r.bits[3] = s0.sum; // LSB
+  r.carry = s3.carry;
+  return r;
 }
 
-// DO NOT MODIFY ANY CODE BELOW
-
-// Plus wrapper 
+// Plus wrapper
 void plus(unsigned a, unsigned b) {
-    RCAResult R = ripple_carry_adder(a, b);
-    int sum_ = bits_to_bin(R.bits, 4);
+  RCAResult R = ripple_carry_adder(a, b);
+  int sum_ = bits_to_bin(R.bits, 4);
 
-    printf("Decimal: %u + %u = %d carry %d.\n", a, b, sum_, R.carry);
-    printf("Binary : ");
-    print_bin4(a);
-    printf(" + ");
-    print_bin4(b);
-    printf(" = ");
-    print_bin4(sum_);
-    printf(" carry %d.\n\n", R.carry);
+  printf("Decimal: %u + %u = %d carry %d.\n", a, b, sum_, R.carry);
+  printf("Binary : ");
+  print_bin4(a);
+  printf(" + ");
+  print_bin4(b);
+  printf(" = ");
+  print_bin4(sum_);
+  printf(" carry %d.\n\n", R.carry);
 }
 
-// Helper functions for asserting test cases similarly to python, not sure if there is a test framework for C that I should be using
+// Helper functions for asserting test cases similarly to python, not sure if
+// there is a test framework for C that I should be using
 void assertion_sumcarry(SumCarry got, int exp_sum, int exp_carry) {
-    assert(got.sum   == exp_sum);
-    assert(got.carry == exp_carry);
+  assert(got.sum == exp_sum);
+  assert(got.carry == exp_carry);
 }
 
-void assertion_RCA(unsigned a, unsigned b, int exp_carry,
-                      int e3, int e2, int e1, int e0) {
-    RCAResult r = ripple_carry_adder(a, b);
-    assert(r.carry   == exp_carry);
-    assert(r.bits[0] == e3);
-    assert(r.bits[1] == e2);
-    assert(r.bits[2] == e1);
-    assert(r.bits[3] == e0);
+void assertion_RCA(unsigned a, unsigned b, int exp_carry, int e3, int e2,
+                   int e1, int e0) {
+  RCAResult r = ripple_carry_adder(a, b);
+  assert(r.carry == exp_carry);
+  assert(r.bits[0] == e3);
+  assert(r.bits[1] == e2);
+  assert(r.bits[2] == e1);
+  assert(r.bits[3] == e0);
 }
 
 int main(int argc, char *argv[]) {

@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+# "This script copies the student's submission to the target directory,
+# and then executes the test runner Python script."
+#
+# See: https://github.com/gradescope/autograder_samples/blob/master/python/src/run_autograder
+#
+# For technical details see: https://gradescope-autograders.readthedocs.io/en/latest/tech/
+
+# Set up autograder files
+
+cp /autograder/submission/ripple.c /autograder/source/ripple.c
+cd /autograder/source
+python3 run_tests.py
