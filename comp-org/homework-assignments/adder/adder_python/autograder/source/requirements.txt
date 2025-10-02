@@ -1,0 +1,2 @@
+flake8>=5.0.4
+gradescope-utils>=0.4.0
