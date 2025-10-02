@@ -2,7 +2,7 @@ import subprocess
 import re
 from pathlib import Path
 import unittest
-from .proc import run_flake8
+from proc import run_flake8
 from gradescope_utils.autograder_utils.decorators import partial_credit
 
 
@@ -195,7 +195,7 @@ class TestAdder(unittest.TestCase):
         score = 0
         if self.mode == "py":
             output = run_flake8(
-                self.target_file, args=["--config", "autograder/flake8.cfg"]
+                self.target_file, args=["--config", "flake8.cfg"]
             )
 
             # print(output.stdout)

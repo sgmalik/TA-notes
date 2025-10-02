@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+# "This script copies the student's submission to the target directory,
+# and then executes the test runner Python script."
+#
+# See: https://github.com/gradescope/autograder_samples/blob/master/python/src/run_autograder
+#
+# For technical details see: https://gradescope-autograders.readthedocs.io/en/latest/tech/
+
+# Set up autograder files
+
+set -e 
+
+if [[ -f autograder/submission/ripple.py ]]; then
+    echo "Python submission detected: copying ripple.py"
+    cp autograder/submission/ripple.py autograder/source/ripple.py
+elif [[ -f autograder/submission/ripple.c ]]; then
+    echo "C submission detected: copying ripple.c"
+    cp autograder/submission/ripple.c autograder/source/ripple.c
+else
+  exit 1
+fi
+
+cd /autograder/source
+
+python3 run_tests.py
